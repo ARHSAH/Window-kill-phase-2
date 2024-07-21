@@ -1,13 +1,14 @@
 package model.charactersModel;
 
 import controller.Variables;
+import model.collision.Collidable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static controller.Controller.createCollectibleView;
 
-public class CollectibleModel {
+public class CollectibleModel implements Collidable {
     private double radius;
     private Point2D center;
     private int xp = 5;
@@ -20,7 +21,9 @@ public class CollectibleModel {
         this.center = center;
         this.id = Variables.collectiblesNumber;
         collectibleModels.add(this);
+        Collidable.collidables.add(this);
         createCollectibleView(id);
+
     }
 
     public double getRadius() {

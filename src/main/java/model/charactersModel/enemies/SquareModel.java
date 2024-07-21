@@ -1,6 +1,8 @@
 package model.charactersModel.enemies;
 
 import controller.Variables;
+import model.collision.Collidable;
+import model.impact.Impactable;
 import model.movement.Direction;
 import model.movement.Movable;
 
@@ -11,7 +13,7 @@ import java.util.Random;
 import static controller.Controller.createSquareView;
 import static controller.Utils.multiplyVector;
 
-public class SquareModel implements Movable {
+public class SquareModel implements Movable, Collidable, Impactable {
     private double x , y;
     private int hp;
     private int damage;
@@ -36,6 +38,9 @@ public class SquareModel implements Movable {
         this.id = Variables.squaresNumber;
         center = new Point2D.Double(x + (double) (length / 2), y + (double) (length / 2));
         squareModels.add(this);
+        Collidable.collidables.add(this);
+        Movable.moveAbles.add(this);
+        Impactable.impactables.add(this);
         createSquareView(id);
     }
     @Override
@@ -83,6 +88,7 @@ public class SquareModel implements Movable {
         this.id = id;
     }
 
+    @Override
     public Point2D getDirection() {
         return direction;
     }
@@ -90,6 +96,7 @@ public class SquareModel implements Movable {
     public void setDirection(Point2D direction) {
         this.direction = direction;
     }
+    @Override
     public Point2D getCenter() {
         return new Point2D.Double(x + (double) (length / 2), y + (double) (length / 2));}
 
@@ -117,10 +124,12 @@ public class SquareModel implements Movable {
 
     public void setLength(int length) {this.length = length;}
 
+    @Override
     public double getSpeed() {
         return speed;
     }
 
+    @Override
     public void setSpeed(double speed) {
         this.speed = speed;
     }
@@ -131,6 +140,9 @@ public class SquareModel implements Movable {
 
     public void setImpact(boolean impact) {
         this.impact = impact;
+    }
+    public boolean getImpact(){
+        return impact;
     }
 
     public boolean isDash() {

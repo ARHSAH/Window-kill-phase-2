@@ -1,6 +1,7 @@
 package model.charactersModel;
 
-import controller.Variables;
+import model.collision.Collidable;
+import model.impact.Impactable;
 import model.movement.Direction;
 import model.movement.Movable;
 
@@ -8,11 +9,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static controller.Constants.*;
-import static controller.Constants.VERTICES_RADIUS;
 import static controller.Utils.multiplyVector;
 import static controller.Variables.*;
 
-public class EpsilonModel implements Movable {
+public class EpsilonModel implements Movable, Collidable, Impactable {
     private static EpsilonModel INSTANCE;
     private int radius, hp;
     private double x, y;
@@ -31,6 +31,8 @@ public class EpsilonModel implements Movable {
         }
         return INSTANCE;
     }
+
+
     private EpsilonModel(double x, double y, int radius , int hp, double speed, Point2D direction){
         this.x = x;
         this.y = y;
@@ -38,6 +40,9 @@ public class EpsilonModel implements Movable {
         this.hp = hp;
         this.speed = speed;
         this.direction = direction;
+        Collidable.collidables.add(this);
+        Impactable.impactables.add(this);
+        Movable.moveAbles.add(this);
     }
 
     public static void setEpsilonSpeed(){
@@ -135,6 +140,11 @@ public class EpsilonModel implements Movable {
         this.impact = impact;
     }
 
+    @Override
+    public boolean getImpact() {
+        return false;
+    }
+
     public ArrayList<Point2D> getVertices() {
         ArrayList<Point2D> vertices = new ArrayList<>();
         for (int i = 0; i < epsilonVertices ; i++) {
@@ -146,8 +156,15 @@ public class EpsilonModel implements Movable {
         }
         return vertices;
     }
+
+    @Override
     public Point2D getCenter(){
         return new Point2D.Double(getX(), getY());
+    }
+
+    @Override
+    public void setCenter(Point2D center) {
+
     }
 
 

@@ -5,7 +5,9 @@ import model.charactersModel.CollectibleModel;
 import model.charactersModel.EpsilonModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
+import model.collision.Collidable;
 import model.collision.Collision;
+import model.impact.Impactable;
 import model.movement.Direction;
 import view.charactersView.BulletView;
 import view.charactersView.EpsilonView;
@@ -23,6 +25,7 @@ import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static controller.Constants.*;
 import static controller.Controller.*;
@@ -33,7 +36,9 @@ import static model.charactersModel.BulletModel.bulletModels;
 import static model.charactersModel.CollectibleModel.collectibleModels;
 import static model.charactersModel.enemies.SquareModel.squareModels;
 import static model.charactersModel.enemies.TriangleModel.triangleModels;
+import static model.collision.Collidable.collidables;
 import static model.collision.Collision.*;
+import static model.impact.Impactable.impactables;
 import static model.sounds.Sounds.*;
 import static view.charactersView.BulletView.bulletViews;
 import static view.charactersView.enemies.SquareView.squareViews;
@@ -182,200 +187,156 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         removedBullets = new ArrayList<>();
         removedTriangles = new ArrayList<>();
         removedCollectibles = new ArrayList<>();
-        
-        //EPSILON SQUARE
-        for (SquareModel squareModel : squareModels) {
-            Point2D point = circlePolygonCollision(new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY()),
-                    squareModel.getVertices());
-            if (distance(point,
-                    new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY())) <
-                    EpsilonModel.getINSTANCE().getRadius()) {
-                if (verticesEpsilonCollision(point, squareModel.getVertices())) {
-                    damageSound();
-                    if(hp - squareModel.getDamage() > 0) {
-                        hp -= squareModel.getDamage();
-                    }else{
-                        hp = 0;
-                        gameFinished = true;
+
+        ArrayList<Collidable> collidables = Collidable.collidables;
+        for (int i = 0 ; i < collidables.size() ; i++) {
+            for (int j = i + 1; j < collidables.size() ; j++) {
+                if ((collidables.get(i) instanceof EpsilonModel &&
+                        collidables.get(j) instanceof SquareModel squareModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY()),
+                            squareModel.getVertices());
+                    if (distance(point,
+                            new Point2D.Double(EpsilonModel.getINSTANCE().getX(),
+                                    EpsilonModel.getINSTANCE().getY())) <
+                            EpsilonModel.getINSTANCE().getRadius()) {
+                        if (verticesEpsilonCollision(point, squareModel.getVertices())) {
+                            damageSound();
+                            if (hp - squareModel.getDamage() > 0) {
+                                hp -= squareModel.getDamage();
+                            } else {
+                                hp = 0;
+                                gameFinished = true;
+                            }
+                        }
+                        if (verticesEpsilonCollision(point, EpsilonModel.getINSTANCE().getVertices())) {
+                            squareModel.setHp(squareModel.getHp() - 10);
+                            damageSound();
+                        }
+
+                        impact1(point, (Impactable) collidables.get(i),
+                                (Impactable) collidables.get(j));
+                    }
+                } else if ((collidables.get(i) instanceof EpsilonModel &&
+                        collidables.get(j) instanceof TriangleModel triangleModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY()),
+                            triangleModel.getVertices());
+                    if (distance(point,
+                            new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY())) <
+                            EpsilonModel.getINSTANCE().getRadius()) {
+                        if (verticesEpsilonCollision(point, triangleModel.getVertices())) {
+                            damageSound();
+                            if (hp - triangleModel.getDamage() > 0) {
+                                hp -= triangleModel.getDamage();
+                            } else {
+                                hp = 0;
+                                gameFinished = true;
+                            }
+                        }
+                        if (verticesEpsilonCollision(point, EpsilonModel.getINSTANCE().getVertices())) {
+                            triangleModel.setHp(triangleModel.getHp() - 10);
+                            damageSound();
+                        }
+                        impact1(point, (Impactable) collidables.get(i), (Impactable) collidables.get(j));
+                    }
+                } else if ((collidables.get(i) instanceof EpsilonModel &&
+                        collidables.get(j) instanceof CollectibleModel collectibleModel)) {
+                    if (collectibleModel.getTimer() > 600) {
+                        removedCollectibles.add(collectibleModel);
+                    } else if (collectibleModel.getCenter().distance(EpsilonModel.getINSTANCE().getCenter()) <
+                            EpsilonModel.getINSTANCE().getRadius() + collectibleModel.getRadius()) {
+                        xp += collectibleModel.getXp();
+                        removedCollectibles.add(collectibleModel);
+                    }
+                } else if ((collidables.get(i) instanceof BulletModel bulletModel &&
+                        collidables.get(j) instanceof SquareModel squareModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double
+                                    (bulletModel.getX(), bulletModel.getY()),
+                            squareModel.getVertices());
+                    if (distance(point,
+                            new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
+                            bulletModel.getRadius()) {
+
+                        squareModel.setHp(squareModel.getHp() - bulletModel.getDamage());
+                        damageSound();
+                        removedBullets.add(bulletModel);
+                        impact1(point);
+                    }
+                } else if ((collidables.get(i) instanceof SquareModel squareModel &&
+                        collidables.get(j) instanceof BulletModel bulletModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double
+                                    (bulletModel.getX(), bulletModel.getY()),
+                            squareModel.getVertices());
+                    if (distance(point,
+                            new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
+                            bulletModel.getRadius()) {
+
+                        squareModel.setHp(squareModel.getHp() - bulletModel.getDamage());
+                        damageSound();
+                        removedBullets.add(bulletModel);
+                        impact1(point);
+                    }
+                } else if ((collidables.get(i) instanceof TriangleModel triangleModel &&
+                        collidables.get(j) instanceof BulletModel bulletModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double
+                                    (bulletModel.getX(), bulletModel.getY()),
+                            triangleModel.getVertices());
+                    if (distance(circlePolygonCollision(new Point2D.Double(bulletModel.getX(), bulletModel.getY()),
+                                    triangleModel.getVertices()),
+                            new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
+                            bulletModel.getRadius()) {
+                        triangleModel.setHp(triangleModel.getHp() - bulletModel.getDamage());
+                        damageSound();
+                        removedBullets.add(bulletModel);
+                        impact1(point);
+                    }
+                } else if ((collidables.get(i) instanceof BulletModel bulletModel &&
+                        collidables.get(j) instanceof TriangleModel triangleModel)) {
+                    Point2D point = circlePolygonCollision(new Point2D.Double
+                                    (bulletModel.getX(), bulletModel.getY()),
+                            triangleModel.getVertices());
+                    if (distance(circlePolygonCollision(new Point2D.Double(bulletModel.getX(), bulletModel.getY()),
+                                    triangleModel.getVertices()),
+                            new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
+                            bulletModel.getRadius()) {
+                        triangleModel.setHp(triangleModel.getHp() - bulletModel.getDamage());
+                        damageSound();
+                        removedBullets.add(bulletModel);
+                        impact1(point);
+                    }
+                } else if ((collidables.get(i) instanceof SquareModel squareModel &&
+                        collidables.get(j) instanceof TriangleModel triangleModel)) {
+                    if (polygonsCollision(triangleModel.getVertices(),
+                            squareModel.getVertices()) != null) {
+                        Point2D point = polygonsCollision(triangleModel.getVertices(), squareModel.getVertices());
+                        impact1(point, triangleModel, squareModel);
+                    }
+                } else if ((collidables.get(i) instanceof TriangleModel triangleModel &&
+                        collidables.get(j) instanceof SquareModel squareModel)) {
+                    if (polygonsCollision(triangleModel.getVertices(),
+                            squareModel.getVertices()) != null) {
+                        Point2D point = polygonsCollision(triangleModel.getVertices(), squareModel.getVertices());
+                        impact1(point, triangleModel, squareModel);
                     }
                 }
-                if (verticesEpsilonCollision(point, EpsilonModel.getINSTANCE().getVertices())) {
-                    squareModel.setHp(squareModel.getHp() - 10);
-                    damageSound();
-                }
-                double epsilonSpeed = EpsilonModel.getINSTANCE().getSpeed();
-                double squareSpeed = squareModel.getSpeed();
-                Point2D effectVector = new Point2D.Double(point.getX() - EpsilonModel.getINSTANCE().getX(),
-                        point.getY() - EpsilonModel.getINSTANCE().getY());
-                Direction directionSquare = new Direction(addVectors(effectVector, squareModel.getDirection()));
-                squareModel.setDirection(directionSquare.getDirectionVector());
-                squareModel.setSpeed(3 + squareSpeed + (int) epsilonSpeed);
-                squareModel.setImpact(true);
-                Direction directionEpsilon = new Direction(addVectors(EpsilonModel.getINSTANCE().
-                        getDirection(), reverseVector(effectVector)));
-                EpsilonModel.getINSTANCE().setDirection(directionEpsilon.getDirectionVector());
-                EpsilonModel.getINSTANCE().setSpeed(3 + squareSpeed + (int) epsilonSpeed);
-                EpsilonModel.getINSTANCE().setImpact(true);
-                impact(point);
-            }
-        }
-
-        //EPSILON TRIANGLE
-        for (TriangleModel triangleModel : triangleModels) {
-            Point2D point = circlePolygonCollision(new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY()),
-                    triangleModel.getVertices());
-            if (distance(point,
-                    new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY())) <
-                    EpsilonModel.getINSTANCE().getRadius()) {
-                if (verticesEpsilonCollision(point, triangleModel.getVertices())) {
-                    damageSound();
-                    if(hp - triangleModel.getDamage() > 0) {
-                        hp -= triangleModel.getDamage();
-                    }else{
-                        hp = 0;
-                        gameFinished = true;
+                else if((collidables.get(i) instanceof SquareModel squareModel1 &&
+                        collidables.get(j) instanceof SquareModel squareModel2 )){
+                    if(polygonsCollision(squareModel1.getVertices(), squareModel2.getVertices()) != null){
+                        Point2D point = polygonsCollision(squareModel1.getVertices(),
+                                squareModel2.getVertices());
+                        impact1(point, squareModel1, squareModel2);
                     }
                 }
-                if (verticesEpsilonCollision(point, EpsilonModel.getINSTANCE().getVertices())) {
-                    triangleModel.setHp(triangleModel.getHp() - 10);
-                    damageSound();
-                }
-                double epsilonSpeed = EpsilonModel.getINSTANCE().getSpeed();
-                double triangleSpeed = triangleModel.getSpeed();
-                Point2D effectVector = new Point2D.Double(point.getX() - EpsilonModel.getINSTANCE().getX(),
-                        point.getY() - EpsilonModel.getINSTANCE().getY());
-                Direction directionSquare = new Direction(addVectors(effectVector, triangleModel.getDirection()));
-                triangleModel.setDirection(directionSquare.getDirectionVector());
-                triangleModel.setSpeed(3 + triangleSpeed + (int) epsilonSpeed);
-                triangleModel.setImpact(true);
-                Direction directionEpsilon = new Direction(addVectors(EpsilonModel.getINSTANCE().
-                        getDirection(), reverseVector(effectVector)));
-                EpsilonModel.getINSTANCE().setDirection(directionEpsilon.getDirectionVector());
-                EpsilonModel.getINSTANCE().setSpeed(3 + triangleSpeed + (int) epsilonSpeed);
-                EpsilonModel.getINSTANCE().setImpact(true);
-                impact(point);
-            }
-        }
-
-        //EPSILON COLLECTIBLE
-        for (CollectibleModel value : collectibleModels){
-            if(value.getTimer() > 600){
-                removedCollectibles.add(value);
-            }
-            else if(value.getCenter().distance(EpsilonModel.getINSTANCE().getCenter()) <
-            EpsilonModel.getINSTANCE().getRadius() + value.getRadius()){
-                xp += value.getXp();
-                removedCollectibles.add(value);
-            }
-        }
-
-        //SQUARE BULLET
-        for (SquareModel squareModel : squareModels) {
-            for (BulletModel bulletModel : bulletModels) {
-                if (distance(circlePolygonCollision(new Point2D.Double(bulletModel.getX(), bulletModel.getY()),
-                                squareModel.getVertices()),
-                        new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
-                        bulletModel.getRadius()) {
-                    Point2D effectVector = reverseVector(squareModel.getDirection());
-                    squareModel.setImpact(true);
-                    squareModel.setDirection(effectVector);
-                    squareModel.setSpeed(bulletModel.getSpeed() / 5);
-                    squareModel.setHp(squareModel.getHp() - bulletModel.getDamage());
-                    damageSound();
-                    removedBullets.add(bulletModel);
+                else if((collidables.get(i) instanceof TriangleModel triangleModel1 &&
+                        collidables.get(j) instanceof TriangleModel triangleModel2 )){
+                    if(polygonsCollision(triangleModel1.getVertices(), triangleModel2.getVertices()) != null){
+                        Point2D point = polygonsCollision(
+                                triangleModel1.getVertices(), triangleModel2.getVertices());
+                        impact1(point, triangleModel1, triangleModel2);
+                    }
                 }
             }
         }
 
-        //TRIANGLE BULLET
-        for (TriangleModel triangleModel : triangleModels) {
-            for (BulletModel bulletModel : bulletModels) {
-                if (distance(circlePolygonCollision(new Point2D.Double(bulletModel.getX(), bulletModel.getY()),
-                                triangleModel.getVertices()),
-                        new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
-                        bulletModel.getRadius()) {
-                    Point2D effectVector = reverseVector(triangleModel.getDirection());
-                    triangleModel.setImpact(true);
-                    triangleModel.setDirection(effectVector);
-                    triangleModel.setSpeed(bulletModel.getSpeed() / 5);
-                    triangleModel.setHp(triangleModel.getHp() - bulletModel.getDamage());
-                    damageSound();
-                    removedBullets.add(bulletModel);
-                }
-            }
-        }
-
-        //TRIANGLE SQUARE
-        for (TriangleModel triangleModel : triangleModels) {
-            for (SquareModel squareModel : squareModels) {
-                if (polygonsCollision(triangleModel.getVertices(),
-                        squareModel.getVertices()) != null) {
-                    int speedT = (int) triangleModel.getSpeed();
-                    int speedS = (int)squareModel.getSpeed();
-                    Point2D point = polygonsCollision(triangleModel.getVertices(), squareModel.getVertices());
-                    Point2D effectVector = new Point2D.Double(point.getX() -
-                            squareModel.getCenter().getX(),
-                            point.getY() - squareModel.getCenter().getY());
-                    Direction directionTriangle = new Direction(addVectors(effectVector, triangleModel.getDirection()));
-                    triangleModel.setDirection(directionTriangle.getDirectionVector());
-                    triangleModel.setSpeed(1 + speedS);
-                    triangleModel.setImpact(true);
-                    Direction directionSquare = new Direction(addVectors(reverseVector(effectVector), squareModel.getDirection()));
-                    squareModel.setDirection(directionSquare.getDirectionVector());
-                    squareModel.setSpeed(1 + speedT);
-                    squareModel.setImpact(true);
-                    impact(point);
-                }
-            }
-        }
-
-        //SQUARE SQUARE
-        for(int i = 0 ; i < squareModels.size() ; i++){
-            assert i + 1 != (squareModels.size() - 1);
-            for(int j = i + 1 ; j < squareModels.size() ; j++){
-                if(polygonsCollision(squareModels.get(i).getVertices(), squareModels.get(j).getVertices()) != null){
-                    double speedI = squareModels.get(i).getSpeed();
-                    double speedJ = squareModels.get(j).getSpeed();
-                    Point2D point = polygonsCollision(squareModels.get(i).getVertices(), squareModels.get(j).getVertices());
-                    Point2D effectVector = new Point2D.Double(point.getX() - squareModels.get(i).getCenter().getX(),
-                            point.getY() - squareModels.get(i).getCenter().getY());
-                    Direction directionSquare1 = new Direction(addVectors(effectVector,
-                            squareModels.get(j).getDirection()));
-                    squareModels.get(j).setDirection(directionSquare1.getDirectionVector());
-                    squareModels.get(j).setSpeed(speedI + 1);
-                    squareModels.get(j).setImpact(true);
-                    Direction directionSquare = new Direction(addVectors(reverseVector(effectVector), squareModels.get(j).getDirection()));
-                    squareModels.get(i).setDirection(directionSquare.getDirectionVector());
-                    squareModels.get(i).setSpeed(speedJ + 1);
-                    squareModels.get(i).setImpact(true);
-                    impact(point);
-                }
-            }
-        }
-
-        //TRIANGLE TRIANGLE
-        for(int i = 0 ; i < triangleModels.size() ; i++){
-            assert i + 1 != (triangleModels.size() - 1);
-            for(int j = i + 1 ; j < triangleModels.size() ; j++){
-                if(polygonsCollision(triangleModels.get(i).getVertices(),
-                        triangleModels.get(j).getVertices()) != null){
-                    double speedI = triangleModels.get(i).getSpeed();
-                    double speedJ = triangleModels.get(j).getSpeed();
-                    Point2D point = polygonsCollision(triangleModels.get(i).getVertices(), triangleModels.get(j).getVertices());
-                    Point2D effectVector = new Point2D.Double(point.getX() - triangleModels.get(i).getCenter().getX(),
-                            point.getY() - triangleModels.get(i).getCenter().getY());
-                    Direction directionSquare1 = new Direction(addVectors(effectVector, triangleModels.get(j).getDirection()));
-                    triangleModels.get(j).setDirection(directionSquare1.getDirectionVector());
-                    triangleModels.get(j).setSpeed(speedI + 1);
-                    triangleModels.get(j).setImpact(true);
-                    Direction directionSquare = new Direction(addVectors(reverseVector(effectVector), triangleModels.get(j).getDirection()));
-                    triangleModels.get(i).setDirection(directionSquare.getDirectionVector());
-                    triangleModels.get(i).setSpeed(speedJ + 1);
-                    triangleModels.get(i).setImpact(true);
-                    impact(point);
-                }
-            }
-        }
 
         //BULLET FRAME
         checkBulletFrame();
@@ -459,6 +420,8 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         for(SquareModel value : removedSquares){
             new CollectibleModel(value.getCenter(), COLLECTIBLE_RADIUS);
             squareModels.remove(value);
+            Collidable.collidables.remove(value);
+            Impactable.impactables.remove(value);
             collapseSound();
         }
 
@@ -467,19 +430,27 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
             new CollectibleModel(value.getCenter(), COLLECTIBLE_RADIUS);
             new CollectibleModel(value.getA(), COLLECTIBLE_RADIUS);
             triangleModels.remove(value);
+            Collidable.collidables.remove(value);
+            Impactable.impactables.remove(value);
             collapseSound();
+
         }
 
         //BULLET REMOVE
         for(BulletModel value : removedBullets){
             value.clip.stop();
             bulletModels.remove(value);
+            Collidable.collidables.remove(value);
+
         }
 
         //COLLECTIBLE REMOVE
         for(CollectibleModel collectibleModel : removedCollectibles){
             collectibleModels.remove(collectibleModel);
+            Collidable.collidables.remove(collectibleModel);
         }
+
+
 
 
     }

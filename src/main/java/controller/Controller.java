@@ -5,6 +5,8 @@ import model.charactersModel.CollectibleModel;
 import model.charactersModel.EpsilonModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
+import model.collision.Collidable;
+import model.impact.Impactable;
 import model.movement.Direction;
 import view.charactersView.BulletView;
 import view.charactersView.CollectibleView;
@@ -18,22 +20,20 @@ import view.panelsView.GamePanel;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 import static controller.Constants.*;
-import static controller.Utils.addVectors;
 import static controller.Utils.reverseVector;
 import static controller.Variables.*;
 import static model.charactersModel.BulletModel.bulletModels;
 import static model.charactersModel.CollectibleModel.collectibleModels;
 import static model.charactersModel.enemies.SquareModel.squareModels;
 import static model.charactersModel.enemies.TriangleModel.triangleModels;
+import static model.impact.Impactable.impactables;
 import static model.sounds.Sounds.enemySpawnSound;
 import static model.sounds.Sounds.gameOverSound;
 import static view.charactersView.BulletView.bulletViews;
 import static view.charactersView.CollectibleView.collectibleViews;
-import static view.charactersView.enemies.SquareView.squareViews;
 import static view.charactersView.enemies.SquareView.squareViews;
 import static view.charactersView.enemies.TriangleView.triangleViews;
 
@@ -166,39 +166,42 @@ public class Controller {
         }
     }
 
-    public static void impact(Point2D point){
-        if(EpsilonModel.getINSTANCE().getCenter().distance(point) > 50 &&
-                EpsilonModel.getINSTANCE().getCenter().distance(point) < 130){
-            Point2D effectVector = new Point2D.Double(point.getX() - EpsilonModel.getINSTANCE().getCenter().getX(),
-                    point.getY() - EpsilonModel.getINSTANCE().getCenter().getY());
-            Direction directionEpsilon = new Direction(reverseVector(effectVector));
-            EpsilonModel.getINSTANCE().setDirection(directionEpsilon.getDirectionVector());
-            EpsilonModel.getINSTANCE().setSpeed(3 + EpsilonModel.getINSTANCE().getSpeed());
-            EpsilonModel.getINSTANCE().setImpact(true);
-        }
-        for(SquareModel squareModel : squareModels){
-            if(squareModel.getCenter().distance(point) > 50 &&
-            squareModel.getCenter().distance(point) < 200){
-                Point2D effectVector = new Point2D.Double(point.getX() - squareModel.getCenter().getX(),
-                        point.getY() - squareModel.getCenter().getY());
-                Direction directionSquare = new Direction(reverseVector(effectVector));
-                squareModel.setDirection(directionSquare.getDirectionVector());
-                squareModel.setSpeed(3 + squareModel.getSpeed());
-                squareModel.setImpact(true);
-            }
-        }
-        for(TriangleModel triangleModel : triangleModels){
-            if(triangleModel.getCenter().distance(point) > 50 &&
-                    triangleModel.getCenter().distance(point) < 130){
-                Point2D effectVector = new Point2D.Double(point.getX() - triangleModel.getCenter().getX(),
-                        point.getY() - triangleModel.getCenter().getY());
-                Direction directionSquare = new Direction(reverseVector(effectVector));
-                triangleModel.setDirection(directionSquare.getDirectionVector());
-                triangleModel.setSpeed(3 + triangleModel.getSpeed());
-                triangleModel.setImpact(true);
-            }
-        }
 
+    public static void impact1(Point2D point, Impactable impactable1, Impactable impactable2) {
+        for (Impactable impactable : impactables) {
+                if (impactable.getCenter().distance(point) < 300) {
+                    Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
+                            point.getY() - impactable.getCenter().getY());
+                    Direction directionSquare = new Direction(reverseVector(effectVector));
+                    impactable.setDirection(directionSquare.getDirectionVector());
+                    if (impactable != impactable1 && impactable != impactable2) {
+                        impactable.setSpeed(Math.abs(3 + impactable.getSpeed() -
+                                (int) (impactable.getCenter().distance(point) / 200)));
+                    } else {
+                        if (impactable1 instanceof EpsilonModel) {
+                            impactable.setSpeed(3 + (int) impactable1.getSpeed() + impactable2.getSpeed());
+                        } else if (impactable2 instanceof EpsilonModel) {
+                            impactable.setSpeed(3 + impactable1.getSpeed() + (int) impactable2.getSpeed());
+                        }else{
+                            impactable1.setSpeed(impactable2.getSpeed() + 1);
+                            impactable2.setSpeed(impactable1.getSpeed() + 1);
+                        }
+                    }
+                    impactable.setImpact(true);
+                }
+        }
+    }
+
+
+    public static void impact1(Point2D point) {
+        for (Impactable impactable : impactables) {
+                Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
+                        point.getY() - impactable.getCenter().getY());
+                Direction directionSquare = new Direction(reverseVector(effectVector));
+                impactable.setDirection(directionSquare.getDirectionVector());
+                impactable.setSpeed(1);
+                impactable.setImpact(true);
+        }
     }
 
     public static void apolloImpact(Point2D point){
@@ -320,6 +323,9 @@ public class Controller {
         GameFrame.setINSTANCE(null);
         GamePanel.setINSTANCE(null);
         GameOverPanel.getINSTANCE();
+
+        Collidable.collidables.clear();
+        Impactable.impactables.clear();
         bulletModels = new ArrayList<>();
         squareModels = new ArrayList<>();
         triangleModels = new ArrayList<>();

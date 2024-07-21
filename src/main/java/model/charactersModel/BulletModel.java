@@ -1,6 +1,7 @@
 package model.charactersModel;
 
 import controller.Variables;
+import model.collision.Collidable;
 import model.movement.Direction;
 import model.movement.Movable;
 
@@ -17,7 +18,7 @@ import static controller.Controller.createBulletView;
 import static controller.Utils.multiplyVector;
 import static controller.Variables.*;
 
-public class BulletModel implements Movable {
+public class BulletModel implements Movable, Collidable {
     private double x, y;
     private int radius;
 
@@ -51,6 +52,8 @@ public class BulletModel implements Movable {
         this.direction = direction;
         bulletModels.add(this);
         this.id = bulletNumbers;
+        Collidable.collidables.add(this);
+        Movable.moveAbles.add(this);
         createBulletView(id);
     }
 

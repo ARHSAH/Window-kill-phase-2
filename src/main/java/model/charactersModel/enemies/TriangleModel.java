@@ -1,17 +1,18 @@
 package model.charactersModel.enemies;
 
 import controller.Variables;
+import model.collision.Collidable;
+import model.impact.Impactable;
 import model.movement.Direction;
 import model.movement.Movable;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import static controller.Controller.createSquareView;
 import static controller.Controller.createTriangleView;
 import static controller.Utils.multiplyVector;
 
-public class TriangleModel implements Movable {
+public class TriangleModel implements Movable, Collidable, Impactable {
     private Point2D A;
     private int length;
     private int hp;
@@ -32,6 +33,9 @@ public class TriangleModel implements Movable {
         direction = new Point2D.Double(0, 0);
         this.id = Variables.trianglesNumber;
         triangleModels.add(this);
+        Collidable.collidables.add(this);
+        Movable.moveAbles.add(this);
+        Impactable.impactables.add(this);
         createTriangleView(id);
     }
 
@@ -125,6 +129,10 @@ public class TriangleModel implements Movable {
         this.impact = impact;
     }
 
+    public boolean getImpact(){
+        return impact;
+    }
+    @Override
     public Point2D getCenter() {
         center = new Point2D.Double(getA().getX(), A.getY() +
                 (double) length * Math.sqrt(3) * (0.33));
