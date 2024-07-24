@@ -1,20 +1,10 @@
 package model.collision;
 
 import model.charactersModel.BulletModel;
-import model.charactersModel.EpsilonModel;
-import model.charactersModel.enemies.SquareModel;
-import view.panelsView.GameFrame;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
-import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
-import static controller.Constants.FRAME_SHRINK_AMOUNT;
-import static controller.Utils.distance;
 import static controller.Variables.*;
 import static model.charactersModel.BulletModel.bulletModels;
 

@@ -21,8 +21,7 @@ public class TutorialPanel extends JPanel {
     }
 
     private TutorialPanel(){
-        MainView.mainPanel.setSize(TUTORIAL_FRAME_WIDTH, TUTORIAL_FRAME_HEIGHT);
-        MainView.mainFrame.setSize(TUTORIAL_FRAME_WIDTH, TUTORIAL_FRAME_HEIGHT);
+
         this.setSize(TUTORIAL_FRAME_WIDTH, TUTORIAL_FRAME_HEIGHT);
         this.setLocation(0, 0);
         this.setLayout(null);
@@ -46,7 +45,7 @@ public class TutorialPanel extends JPanel {
         JLabel tutorial1 = new JLabel();
         tutorial1.setText(
                 "itself is constantly closing in on you. " +
-                "Shoot the window edges");
+                        "Shoot the window edges");
         tutorial1.setFont(new Font(null, Font.PLAIN,25));
         tutorial1.setForeground(Color.BLACK);
         tutorial1.setLocation(15, 100);
@@ -125,9 +124,9 @@ public class TutorialPanel extends JPanel {
 
         this.repaint();
         this.revalidate();
-        MainView.mainPanel.add(this);
-        MainView.mainPanel.repaint();
-        MainView.mainPanel.revalidate();
+        GlassFrame.getINSTANCE().add(this);
+        GlassFrame.getINSTANCE().repaint();
+        GlassFrame.getINSTANCE().revalidate();
     }
     @Override
     public void paintComponent(Graphics g){

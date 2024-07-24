@@ -45,7 +45,6 @@ public class GameOverPanel extends JPanel {
             GameOverFrame.getINSTANCE().setVisible(false);
             GameOverFrame.setINSTANCE(null);
             INSTANCE = null;
-            MainView.mainFrame.setState(JFrame.NORMAL);
         });
         this.add(exit);
     }

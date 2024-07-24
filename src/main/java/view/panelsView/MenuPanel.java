@@ -34,8 +34,7 @@ public class MenuPanel extends JPanel {
             e.printStackTrace();
             return null; } }
     private MenuPanel(){
-        MainView.mainPanel.setSize(MENU_FRAME_SIZE, MENU_FRAME_SIZE);
-        MainView.mainFrame.setSize(MENU_FRAME_SIZE,MENU_FRAME_SIZE);
+
         this.setSize(STANDARD_FRAME_SIZE, STANDARD_FRAME_SIZE);
         this.setLayout(null);
         this.setLocation(0, 0);
@@ -72,7 +71,6 @@ public class MenuPanel extends JPanel {
         start.setFocusable(false);
         start.setFont(new Font(null,Font.PLAIN, 20));
         start.addActionListener(e -> {
-            MainView.mainFrame.setState(JFrame.ICONIFIED);
             GamePanel.getINSTANCE();
             Update.getINSTANCE();
         });
@@ -89,8 +87,6 @@ public class MenuPanel extends JPanel {
         skillTree.addActionListener(e -> {
             this.setVisible(false);
             INSTANCE = null;
-            MainView.mainPanel.setSize(SKILLTREE_FRAME_WIDTH, SKILLTREE_FRAME_HEIGHT);
-            MainView.mainFrame.setSize(SKILLTREE_FRAME_WIDTH,SKILLTREE_FRAME_HEIGHT);
             SkillTreePanel.getINSTANCE().xpLabel.setText(String.valueOf(allXp));
             SkillTreePanel.getINSTANCE().setVisible(true);
         });
@@ -140,13 +136,9 @@ public class MenuPanel extends JPanel {
             System.exit(0);
         });
         menuLabel.add(exit);
-
+        GlassFrame.getINSTANCE().add(this);
         this.repaint();
         this.revalidate();
-        MainView.mainFrame.setVisible(true);
-        MainView.mainPanel.add(this);
-        MainView.mainPanel.repaint();
-        MainView.mainPanel.revalidate();
+
     }
 }
-

@@ -88,7 +88,7 @@ public class Controller {
             value.setVertices(triangleModel.getVertices());
         }
         for (CollectibleView value : collectibleViews) {
-           CollectibleModel collectibleModel = findCollectibleModel(value.getId());
+            CollectibleModel collectibleModel = findCollectibleModel(value.getId());
             if (collectibleModel == null) {
                 collectibleViews.remove(value);
                 return;
@@ -169,38 +169,38 @@ public class Controller {
 
     public static void impact1(Point2D point, Impactable impactable1, Impactable impactable2) {
         for (Impactable impactable : impactables) {
-                if (impactable.getCenter().distance(point) < 300) {
-                    Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
-                            point.getY() - impactable.getCenter().getY());
-                    Direction directionSquare = new Direction(reverseVector(effectVector));
-                    impactable.setDirection(directionSquare.getDirectionVector());
-                    if (impactable != impactable1 && impactable != impactable2) {
-                        impactable.setSpeed(Math.abs(3 + impactable.getSpeed() -
-                                (int) (impactable.getCenter().distance(point) / 200)));
-                    } else {
-                        if (impactable1 instanceof EpsilonModel) {
-                            impactable.setSpeed(3 + (int) impactable1.getSpeed() + impactable2.getSpeed());
-                        } else if (impactable2 instanceof EpsilonModel) {
-                            impactable.setSpeed(3 + impactable1.getSpeed() + (int) impactable2.getSpeed());
-                        }else{
-                            impactable1.setSpeed(impactable2.getSpeed() + 1);
-                            impactable2.setSpeed(impactable1.getSpeed() + 1);
-                        }
+            if (impactable.getCenter().distance(point) < 300) {
+                Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
+                        point.getY() - impactable.getCenter().getY());
+                Direction directionSquare = new Direction(reverseVector(effectVector));
+                impactable.setDirection(directionSquare.getDirectionVector());
+                if (impactable != impactable1 && impactable != impactable2) {
+                    impactable.setSpeed(Math.abs(3 + impactable.getSpeed() -
+                            (int) (impactable.getCenter().distance(point) / 200)));
+                } else {
+                    if (impactable1 instanceof EpsilonModel) {
+                        impactable.setSpeed(3 + (int) impactable1.getSpeed() + impactable2.getSpeed());
+                    } else if (impactable2 instanceof EpsilonModel) {
+                        impactable.setSpeed(3 + impactable1.getSpeed() + (int) impactable2.getSpeed());
+                    }else{
+                        impactable1.setSpeed(impactable2.getSpeed() + 1);
+                        impactable2.setSpeed(impactable1.getSpeed() + 1);
                     }
-                    impactable.setImpact(true);
                 }
+                impactable.setImpact(true);
+            }
         }
     }
 
 
     public static void impact1(Point2D point) {
         for (Impactable impactable : impactables) {
-                Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
-                        point.getY() - impactable.getCenter().getY());
-                Direction directionSquare = new Direction(reverseVector(effectVector));
-                impactable.setDirection(directionSquare.getDirectionVector());
-                impactable.setSpeed(1);
-                impactable.setImpact(true);
+            Point2D effectVector = new Point2D.Double(point.getX() - impactable.getCenter().getX(),
+                    point.getY() - impactable.getCenter().getY());
+            Direction directionSquare = new Direction(reverseVector(effectVector));
+            impactable.setDirection(directionSquare.getDirectionVector());
+            impactable.setSpeed(1);
+            impactable.setImpact(true);
         }
     }
 
@@ -273,8 +273,8 @@ public class Controller {
             if(wave == 1 && waveTimer % 500 == 0 && waveTimer <= 1500){
                 enemySpawnSound();
                 for(int i = 0 ; i < total / 7 ; i ++){
-                   randomTriSqa();
-               }
+                    randomTriSqa();
+                }
             }else if(wave == 2 && waveTimer % 600 == 500 && waveTimer <= 1700){
                 enemySpawnSound();
                 for(int i = 0 ; i < total / 5 ; i ++){
@@ -335,8 +335,8 @@ public class Controller {
         triangleViews = new ArrayList<>();
         collectibleViews = new ArrayList<>();
         EpsilonModel.setINSTANCE(null);
-       sensitivity = 50;
-       difficulty = 50;
-       volume = 50;
+        sensitivity = 50;
+        difficulty = 50;
+        volume = 50;
     }
 }

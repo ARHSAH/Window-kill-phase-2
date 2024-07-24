@@ -27,8 +27,6 @@ public class SettingPanel extends JPanel {
         return INSTANCE;
     }
     private SettingPanel(){
-        MainView.mainPanel.setSize(SETTING_FRAME_WIDTH, SETTING_FRAME_HEIGHT);
-        MainView.mainFrame.setSize(SETTING_FRAME_WIDTH,SETTING_FRAME_HEIGHT);
         this.setSize(SETTING_FRAME_WIDTH, SETTING_FRAME_HEIGHT);
         this.setLocation(0, 0);
         this.setLayout(null);
@@ -159,9 +157,9 @@ public class SettingPanel extends JPanel {
 
         this.repaint();
         this.revalidate();
-        MainView.mainPanel.add(this);
-        MainView.mainPanel.repaint();
-        MainView.mainPanel.revalidate();
+        GlassFrame.getINSTANCE().add(this);
+        GlassFrame.getINSTANCE().repaint();
+        GlassFrame.getINSTANCE().revalidate();
     }
 
     public static int getSensitivity() {

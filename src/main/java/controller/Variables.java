@@ -4,17 +4,11 @@ import model.charactersModel.BulletModel;
 import model.charactersModel.CollectibleModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
-import view.panelsView.SettingPanel;
-import view.panelsView.SkillTreePanel;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static controller.Constants.BULLET_DAMAGE;
-import static model.charactersModel.BulletModel.bulletModels;
-import static model.charactersModel.CollectibleModel.collectibleModels;
-import static model.charactersModel.enemies.SquareModel.squareModels;
-import static model.charactersModel.enemies.TriangleModel.triangleModels;
 
 
 public class Variables {

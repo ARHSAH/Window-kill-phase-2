@@ -3,6 +3,8 @@ package controller;
 import java.awt.*;
 
 public class Constants {
+    public static final Dimension GLASS_FRAME_DIMENSION = new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width,
+            Toolkit.getDefaultToolkit().getScreenSize().height);
     public static final int MENU_FRAME_SIZE = 600;
     public static final int SETTING_FRAME_WIDTH = 700;
     public static final int SETTING_FRAME_HEIGHT = 500;

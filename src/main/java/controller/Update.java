@@ -68,8 +68,8 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
             mainSong.loop(5);
             mainSong.start();
         } catch (Exception e) {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
+        }
         reset();
         timer = new Timer(Constants.UPS, this);
         timer.start();
@@ -470,7 +470,7 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
             eRight = -1;
         }
         if(e.getKeyChar() == 'd'){
-           eLeft = 1;
+            eLeft = 1;
 
         }
         if(e.getKeyChar() == 'x'){

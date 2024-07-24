@@ -1,11 +1,7 @@
 package view.charactersView;
 
-import model.charactersModel.BulletModel;
-
 import java.awt.*;
 import java.util.ArrayList;
-
-import static controller.Variables.frameWidth;
 
 public class BulletView {
     private double x, y;

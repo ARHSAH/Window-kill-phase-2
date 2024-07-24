@@ -554,9 +554,9 @@ public class SkillTreePanel extends JPanel {
 
         this.repaint();
         this.revalidate();
-        MainView.mainPanel.add(this);
-        MainView.mainPanel.repaint();
-        MainView.mainPanel.revalidate();
+        GlassFrame.getINSTANCE().add(this);
+        GlassFrame.getINSTANCE().add(this).repaint();
+        GlassFrame.getINSTANCE().add(this).revalidate();
 
 
     }
