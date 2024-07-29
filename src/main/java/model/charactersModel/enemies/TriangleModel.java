@@ -1,6 +1,7 @@
 package model.charactersModel.enemies;
 
 import controller.Variables;
+import model.charactersModel.EpsilonModel;
 import model.collision.Collidable;
 import model.impact.Impactable;
 import model.movement.Direction;
@@ -51,6 +52,26 @@ public class TriangleModel implements Movable, Collidable, Impactable {
 
     @Override
     public void move() {
+        if(!isImpact()) {
+            Direction direction = new Direction(new
+                    Point2D.Double(EpsilonModel.getINSTANCE().getX() - getA().getX(),
+                    EpsilonModel.getINSTANCE().getY() - getA().getY()));
+            setDirection(direction.getDirectionVector());
+            if(getSpeed() < 0.5 ){
+                setSpeed(getSpeed() + 0.1);
+            }else if(getCenter().distance(new Point2D.Double(EpsilonModel.getINSTANCE().getX(),
+                    EpsilonModel.getINSTANCE().getY())) > 130){
+                setSpeed(5);
+            }else{
+                setSpeed(0.5);
+            }
+
+        }else if(getSpeed() > 0){
+            setSpeed(getSpeed() - 0.5);
+        }else{
+            setImpact(false);
+        }
+
         Point2D vector = multiplyVector(direction, getSpeed());
         setA(new Point2D.Double(getA().getX() + vector.getX(), getA().getY() + vector.getY() ));
     }
@@ -141,5 +162,15 @@ public class TriangleModel implements Movable, Collidable, Impactable {
 
     public void setCenter(Point2D center) {
         this.center = center;
+    }
+
+    @Override
+    public boolean isCircular() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return true;
     }
 }

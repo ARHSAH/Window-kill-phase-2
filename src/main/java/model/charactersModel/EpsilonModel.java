@@ -4,7 +4,9 @@ import model.collision.Collidable;
 import model.impact.Impactable;
 import model.movement.Direction;
 import model.movement.Movable;
+import view.panelsView.GamePanel;
 
+import javax.swing.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -23,23 +25,28 @@ public class EpsilonModel implements Movable, Collidable, Impactable {
 
     private Point2D direction;
     private boolean impact;
+    private JPanel panel;
+
     ;
     public static EpsilonModel getINSTANCE() {
         if(INSTANCE == null){
             INSTANCE = new EpsilonModel((double) frameWidth / 2 ,
-                    (double) frameHeight / 2, EPSILON_RADIUS, 100, 0.5, new Point2D.Double(0,0));
+                    (double) frameHeight / 2, EPSILON_RADIUS, 100, 0.5,
+                    new Point2D.Double(0,0));
         }
         return INSTANCE;
     }
 
 
-    private EpsilonModel(double x, double y, int radius , int hp, double speed, Point2D direction){
+    private EpsilonModel(double x, double y, int radius , int hp, double speed,
+                         Point2D direction){
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.hp = hp;
         this.speed = speed;
         this.direction = direction;
+        this.panel = panel;
         Collidable.collidables.add(this);
         Impactable.impactables.add(this);
         Movable.moveAbles.add(this);
@@ -167,5 +174,21 @@ public class EpsilonModel implements Movable, Collidable, Impactable {
 
     }
 
+    public JPanel getPanel() {
+        return panel;
+    }
 
+    public void setPanel(JPanel panel) {
+        this.panel = panel;
+    }
+
+    @Override
+    public boolean isCircular() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return false;
+    }
 }

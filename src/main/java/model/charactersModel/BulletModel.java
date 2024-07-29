@@ -1,6 +1,5 @@
 package model.charactersModel;
 
-import controller.Variables;
 import model.collision.Collidable;
 import model.movement.Direction;
 import model.movement.Movable;
@@ -12,7 +11,6 @@ import javax.sound.sampled.FloatControl;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import static controller.Controller.createBulletView;
 import static controller.Utils.multiplyVector;
@@ -137,5 +135,25 @@ public class BulletModel implements Movable, Collidable {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    @Override
+    public boolean isCircular() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return false;
+    }
+
+    @Override
+    public ArrayList<Point2D> getVertices() {
+        return null;
+    }
+
+    @Override
+    public Point2D.Double getCenter() {
+        return new Point2D.Double(x,y);
     }
 }

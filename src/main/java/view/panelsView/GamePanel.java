@@ -4,6 +4,7 @@ import controller.Variables;
 import view.charactersView.BulletView;
 import view.charactersView.CollectibleView;
 import view.charactersView.EpsilonView;
+import view.charactersView.enemies.OmenoctView;
 import view.charactersView.enemies.SquareView;
 import view.charactersView.enemies.TriangleView;
 
@@ -17,6 +18,7 @@ import java.awt.geom.Point2D;
 import static controller.Variables.*;
 import static view.charactersView.BulletView.bulletViews;
 import static view.charactersView.CollectibleView.collectibleViews;
+import static view.charactersView.enemies.OmenoctView.omenoctViews;
 import static view.charactersView.enemies.SquareView.squareViews;
 import static view.charactersView.enemies.TriangleView.triangleViews;
 
@@ -37,6 +39,7 @@ public class GamePanel extends JPanel {
     }
 
     private GamePanel() {
+        GlassFrame.getINSTANCE().add(this);
         this.setSize((int)frameWidth, (int)frameHeight);
         this.setLocation(0, 0);
         this.setLayout(null);
@@ -105,6 +108,9 @@ public class GamePanel extends JPanel {
         }
         g2.setColor(Color.green);
         for(CollectibleView value : collectibleViews){
+            value.draw(g2);
+        }
+        for(OmenoctView value : omenoctViews){
             value.draw(g2);
         }
         this.repaint();

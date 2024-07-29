@@ -3,6 +3,7 @@ package controller;
 import model.charactersModel.BulletModel;
 import model.charactersModel.CollectibleModel;
 import model.charactersModel.EpsilonModel;
+import model.charactersModel.enemies.OmenoctModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
 import model.collision.Collidable;
@@ -11,6 +12,7 @@ import model.movement.Direction;
 import view.charactersView.BulletView;
 import view.charactersView.CollectibleView;
 import view.charactersView.EpsilonView;
+import view.charactersView.enemies.OmenoctView;
 import view.charactersView.enemies.SquareView;
 import view.charactersView.enemies.TriangleView;
 import view.panelsView.GameFrame;
@@ -27,6 +29,7 @@ import static controller.Utils.reverseVector;
 import static controller.Variables.*;
 import static model.charactersModel.BulletModel.bulletModels;
 import static model.charactersModel.CollectibleModel.collectibleModels;
+import static model.charactersModel.enemies.OmenoctModel.omenoctModels;
 import static model.charactersModel.enemies.SquareModel.squareModels;
 import static model.charactersModel.enemies.TriangleModel.triangleModels;
 import static model.impact.Impactable.impactables;
@@ -34,6 +37,7 @@ import static model.sounds.Sounds.enemySpawnSound;
 import static model.sounds.Sounds.gameOverSound;
 import static view.charactersView.BulletView.bulletViews;
 import static view.charactersView.CollectibleView.collectibleViews;
+import static view.charactersView.enemies.OmenoctView.omenoctViews;
 import static view.charactersView.enemies.SquareView.squareViews;
 import static view.charactersView.enemies.TriangleView.triangleViews;
 
@@ -52,6 +56,10 @@ public class Controller {
     }
     public static void createCollectibleView(int id) {
         new CollectibleView(id);
+    }
+    public static void createOmenoctView(int id) {
+
+        new OmenoctView(id);
     }
 
     public static void setViewLocation() {
@@ -96,6 +104,14 @@ public class Controller {
             value.setCenter(collectibleModel.getCenter());
             value.setRadius(collectibleModel.getRadius());
         }
+        for(OmenoctView value : omenoctViews){
+            OmenoctModel omenoctModel = findOmenoctModel(value.getId());
+            if (omenoctModel == null) {
+                omenoctViews.remove(value);
+                return;
+            }
+            value.setCenter(omenoctModel.getCenter());
+        }
 
     }
 
@@ -127,6 +143,15 @@ public class Controller {
     }
     public static CollectibleModel findCollectibleModel(int id) {
         for (CollectibleModel value : collectibleModels) {
+            if (value.getId() == id) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static OmenoctModel findOmenoctModel(int id){
+        for (OmenoctModel value : omenoctModels) {
             if (value.getId() == id) {
                 return value;
             }
@@ -205,26 +230,17 @@ public class Controller {
     }
 
     public static void apolloImpact(Point2D point){
-        for(SquareModel squareModel : squareModels){
-            if(squareModel.getCenter().distance(point) > 50 &&
-                    squareModel.getCenter().distance(point) < 200){
-                Point2D effectVector = new Point2D.Double(point.getX() - squareModel.getCenter().getX(),
-                        point.getY() - squareModel.getCenter().getY());
+        for(Impactable impactable : impactables){
+            if(!(impactable instanceof OmenoctModel) &&
+            impactable.getCenter().distance(point) > 50 &&
+                    impactable.getCenter().distance(point) < 200){
+                Point2D effectVector = new Point2D.Double(point.getX() -
+                        impactable.getCenter().getX(),
+                        point.getY() - impactable.getCenter().getY());
                 Direction directionSquare = new Direction(reverseVector(effectVector));
-                squareModel.setDirection(directionSquare.getDirectionVector());
-                squareModel.setSpeed(15);
-                squareModel.setImpact(true);
-            }
-        }
-        for(TriangleModel triangleModel : triangleModels){
-            if(triangleModel.getCenter().distance(point) > 50 &&
-                    triangleModel.getCenter().distance(point) < 130){
-                Point2D effectVector = new Point2D.Double(point.getX() - triangleModel.getCenter().getX(),
-                        point.getY() - triangleModel.getCenter().getY());
-                Direction directionSquare = new Direction(reverseVector(effectVector));
-                triangleModel.setDirection(directionSquare.getDirectionVector());
-                triangleModel.setSpeed(15);
-                triangleModel.setImpact(true);
+                impactable.setDirection(directionSquare.getDirectionVector());
+                impactable.setSpeed(15);
+                impactable.setImpact(true);
             }
         }
 

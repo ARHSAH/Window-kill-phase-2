@@ -3,6 +3,7 @@ package controller;
 import model.charactersModel.BulletModel;
 import model.charactersModel.CollectibleModel;
 import model.charactersModel.EpsilonModel;
+import model.charactersModel.enemies.OmenoctModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
 import model.collision.Collidable;
@@ -13,6 +14,7 @@ import view.charactersView.BulletView;
 import view.charactersView.EpsilonView;
 import view.panelsView.GameFrame;
 import view.panelsView.GamePanel;
+import view.panelsView.GlassFrame;
 import view.panelsView.StorePanel;
 
 import javax.sound.sampled.AudioInputStream;
@@ -34,6 +36,7 @@ import static controller.Variables.*;
 import static java.nio.file.Files.move;
 import static model.charactersModel.BulletModel.bulletModels;
 import static model.charactersModel.CollectibleModel.collectibleModels;
+import static model.charactersModel.enemies.OmenoctModel.omenoctModels;
 import static model.charactersModel.enemies.SquareModel.squareModels;
 import static model.charactersModel.enemies.TriangleModel.triangleModels;
 import static model.collision.Collidable.collidables;
@@ -156,6 +159,7 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         setViewLocation();
         GamePanel.getINSTANCE().repaint();
         GamePanel.getINSTANCE().revalidate();
+
     }
     public void updateModel() {
         wave();
@@ -191,6 +195,7 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         ArrayList<Collidable> collidables = Collidable.collidables;
         for (int i = 0 ; i < collidables.size() ; i++) {
             for (int j = i + 1; j < collidables.size() ; j++) {
+                //EPSILON COLLISIONS
                 if ((collidables.get(i) instanceof EpsilonModel &&
                         collidables.get(j) instanceof SquareModel squareModel)) {
                     Point2D point = circlePolygonCollision(new Point2D.Double(EpsilonModel.getINSTANCE().getX(), EpsilonModel.getINSTANCE().getY()),
@@ -247,6 +252,7 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
                         xp += collectibleModel.getXp();
                         removedCollectibles.add(collectibleModel);
                     }
+                //BULLET ENEMIES
                 } else if ((collidables.get(i) instanceof BulletModel bulletModel &&
                         collidables.get(j) instanceof SquareModel squareModel)) {
                     Point2D point = circlePolygonCollision(new Point2D.Double
@@ -263,11 +269,11 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
                     }
                 } else if ((collidables.get(i) instanceof SquareModel squareModel &&
                         collidables.get(j) instanceof BulletModel bulletModel)) {
-                    Point2D point = circlePolygonCollision(new Point2D.Double
-                                    (bulletModel.getX(), bulletModel.getY()),
+                    Point2D point = circlePolygonCollision(
+                            bulletModel.getCenter(),
                             squareModel.getVertices());
                     if (distance(point,
-                            new Point2D.Double(bulletModel.getX(), bulletModel.getY())) <
+                            bulletModel.getCenter()) <
                             bulletModel.getRadius()) {
 
                         squareModel.setHp(squareModel.getHp() - bulletModel.getDamage());
@@ -367,21 +373,6 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         //SQUARE MOVEMENT
         for(SquareModel value : squareModels){
             if(value.getHp() > 0) {
-                if(!value.isImpact()) {
-                    Direction direction = new Direction(new
-                            Point2D.Double(EpsilonModel.getINSTANCE().getX() - value.getX(),
-                            EpsilonModel.getINSTANCE().getY() - value.getY()));
-                    value.setDirection(direction.getDirectionVector());
-                    if(value.getSpeed() < 0.5 ){
-                        value.setSpeed(value.getSpeed() + 0.1);
-                    }else if(value.getSpeed() > 0.5){
-                        value.setSpeed(value.getSpeed() - 0.5);
-                    }
-                }else if(value.getSpeed() > 0){
-                    value.setSpeed(value.getSpeed() - 0.5);
-                }else{
-                    value.setImpact(false);
-                }
                 value.move();
             }else{
                 removedSquares.add(value);
@@ -391,29 +382,16 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
         //TRIANGLE MOVEMENT
         for(TriangleModel value : triangleModels){
             if(value.getHp() > 0) {
-                if(!value.isImpact()) {
-                    Direction direction = new Direction(new
-                            Point2D.Double(EpsilonModel.getINSTANCE().getX() - value.getA().getX(),
-                            EpsilonModel.getINSTANCE().getY() - value.getA().getY()));
-                    value.setDirection(direction.getDirectionVector());
-                    if(value.getSpeed() < 0.5 ){
-                        value.setSpeed(value.getSpeed() + 0.1);
-                    }else if(value.getCenter().distance(new Point2D.Double(EpsilonModel.getINSTANCE().getX(),
-                            EpsilonModel.getINSTANCE().getY())) > 130){
-                        value.setSpeed(5);
-                    }else{
-                        value.setSpeed(0.5);
-                    }
-
-                }else if(value.getSpeed() > 0){
-                    value.setSpeed(value.getSpeed() - 0.5);
-                }else{
-                    value.setImpact(false);
-                }
                 value.move();
             }else{
                 removedTriangles.add(value);
             }
+        }
+
+        //OMENOCT MOVEMENT
+        for(OmenoctModel value : omenoctModels){
+            value.move();
+
         }
 
         //SQUARE REMOVE
@@ -435,6 +413,8 @@ public class Update implements ActionListener, KeyListener, MouseMotionListener{
             collapseSound();
 
         }
+
+
 
         //BULLET REMOVE
         for(BulletModel value : removedBullets){

@@ -1,6 +1,7 @@
 package model.charactersModel.enemies;
 
 import controller.Variables;
+import model.charactersModel.EpsilonModel;
 import model.collision.Collidable;
 import model.impact.Impactable;
 import model.movement.Direction;
@@ -26,7 +27,8 @@ public class SquareModel implements Movable, Collidable, Impactable {
     public static ArrayList<SquareModel> squareModels = new ArrayList<>();
     private boolean impact;
     private boolean dash;
-    public SquareModel(double x, double y, int length, int hp, int damage, double speed){
+    public SquareModel(double x, double y, int length, int hp,
+                       int damage, double speed){
         Variables.squaresNumber ++;
         this.x = x;
         this.y = y;
@@ -112,6 +114,22 @@ public class SquareModel implements Movable, Collidable, Impactable {
 
     @Override
     public void move() {
+        if(!isImpact()) {
+            Direction direction = new Direction(new
+                    Point2D.Double(EpsilonModel.getINSTANCE().getX() - getX(),
+                    EpsilonModel.getINSTANCE().getY() - getY()));
+            setDirection(direction.getDirectionVector());
+            if(getSpeed() < 0.5 ){
+                setSpeed(getSpeed() + 0.1);
+            }else if(getSpeed() > 0.5){
+                setSpeed(getSpeed() - 0.5);
+            }
+        }else if(getSpeed() > 0){
+            setSpeed(getSpeed() - 0.5);
+        }else{
+            setImpact(false);
+        }
+
         if(new Random().nextInt(1, 400) == 5){
             setSpeed(7);
         }
@@ -165,4 +183,13 @@ public class SquareModel implements Movable, Collidable, Impactable {
         return vertices;
     }
 
+    @Override
+    public boolean isCircular() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return true;
+    }
 }

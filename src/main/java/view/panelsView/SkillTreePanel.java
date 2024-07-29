@@ -32,7 +32,7 @@ public class SkillTreePanel extends JPanel {
     private SkillTreePanel(){;
         ImageIcon lockIcon = new ImageIcon("lock.png");
         this.setSize(SKILLTREE_FRAME_WIDTH, SKILLTREE_FRAME_HEIGHT);
-        this.setLocation(0, 0);
+        this.setLocation(300, 110);
         this.setLayout(null);
 
 

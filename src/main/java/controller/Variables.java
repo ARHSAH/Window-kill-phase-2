@@ -2,6 +2,7 @@ package controller;
 
 import model.charactersModel.BulletModel;
 import model.charactersModel.CollectibleModel;
+import model.charactersModel.enemies.OmenoctModel;
 import model.charactersModel.enemies.SquareModel;
 import model.charactersModel.enemies.TriangleModel;
 
@@ -52,6 +53,7 @@ public class Variables {
     public static boolean bullet;
     public static boolean athenaActive;
     public static int athenaTimer;
+    public static int omenoctNumbers = 0;
     public static void reset(){
 
         xp = 0;
@@ -86,5 +88,6 @@ public class Variables {
         athenaActive = false;
         athenaTimer = 0;
         bullet = false;
+        omenoctNumbers = 0;
     }
 }

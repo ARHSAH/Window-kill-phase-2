@@ -37,7 +37,8 @@ public class MenuPanel extends JPanel {
 
         this.setSize(STANDARD_FRAME_SIZE, STANDARD_FRAME_SIZE);
         this.setLayout(null);
-        this.setLocation(0, 0);
+        this.setLocation(300, 110);
+
         BufferedImage image = null;
         try {
             image = ImageIO.read(new File("menubackground.png"));
@@ -71,6 +72,9 @@ public class MenuPanel extends JPanel {
         start.setFocusable(false);
         start.setFont(new Font(null,Font.PLAIN, 20));
         start.addActionListener(e -> {
+            this.setVisible(false);
+            INSTANCE = null;
+            GlassFrame.getINSTANCE().remove(this);
             GamePanel.getINSTANCE();
             Update.getINSTANCE();
         });

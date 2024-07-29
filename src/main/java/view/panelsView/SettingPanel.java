@@ -28,7 +28,7 @@ public class SettingPanel extends JPanel {
     }
     private SettingPanel(){
         this.setSize(SETTING_FRAME_WIDTH, SETTING_FRAME_HEIGHT);
-        this.setLocation(0, 0);
+        this.setLocation(300, 110);
         this.setLayout(null);
         BufferedImage image = null;
         try {

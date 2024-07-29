@@ -23,7 +23,7 @@ public class TutorialPanel extends JPanel {
     private TutorialPanel(){
 
         this.setSize(TUTORIAL_FRAME_WIDTH, TUTORIAL_FRAME_HEIGHT);
-        this.setLocation(0, 0);
+        this.setLocation(300, 110);
         this.setLayout(null);
 
         helloTutorialLabel = new JLabel("TUTORIAL");

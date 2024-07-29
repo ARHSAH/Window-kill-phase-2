@@ -66,4 +66,19 @@ public class CollectibleModel implements Collidable {
     public void setTimer(int timer) {
         this.timer = timer;
     }
+
+    @Override
+    public boolean isCircular() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return false;
+    }
+
+    @Override
+    public ArrayList<Point2D> getVertices() {
+        return null;
+    }
 }
