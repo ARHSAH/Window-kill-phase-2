@@ -1,0 +1,185 @@
+to_matrix(L) := block(
+    [rows],
+    rows : length(L),
+    if matrixp(L) then return(L)
+    else if rows = 0 then matrix()
+    else if not listp(first(L)) then apply('matrix, [L])
+    else apply('matrix, L)
+)$
+
+check_row_echelon(A) := block(
+    [M, rows, cols, i, j, lead, bool],
+    M : to_matrix(A),
+    rows : length(M),
+    cols : length(first(M)),
+    lead : 0,
+    bool : true,
+ 
+
+    for i : 1 thru rows do (
+        j : 1,
+        while (j <= cols and M[i, j] = 0)
+        do j : j + 1,
+        if j <= cols then (
+            if j <= lead then(
+                bool : false,
+                return(false)
+                ),
+            lead : j
+        )
+    ),
+    
+    return(bool)
+)$ 
+
+
+check_reduced_row_echelon(A) := block(
+    [M, rows, cols, i, j, k, lead, bool],  
+    M : to_matrix(A),
+    rows : length(M),
+    cols : length(first(M)),
+    lead : 0,
+    bool : true,
+
+    for i : 1 thru rows do (
+        j : 1,
+        while (j <= cols and M[i, j] = 0)
+        do j : j + 1,
+    
+        if j <= cols then (
+            if j <= lead or M[i, j] # 1 then (
+                bool : false,
+                return(false)  
+            ),
+            
+            lead : j,
+            
+            for k : 1 thru rows do (
+                if k # i and M[k, j] # 0 then (
+                    bool : false,
+                    return(false)  
+                )
+            )
+        )
+    ),
+    
+    return(bool)  
+)$
+
+ check_permutation(A) := block(
+    [M, rows, cols, i, j, ones, bool],    
+    M : to_matrix(A),
+    rows : length(M),
+    cols : length(first(M)),
+    bool : true,
+    
+
+    if rows # cols then (
+        bool : false,
+        return(false)
+    ),
+
+    for i : 1 thru rows do (
+        ones : 0,
+    
+        for j : 1 thru cols do (
+            if M[i, j] = 1 then ones : ones + 1
+            else if M[i, j] # 0 then (
+                 bool : false,
+                return(false)
+            )
+        ),
+        
+        if ones # 1 then(
+             bool : false,
+            return(false)
+        )
+    ),
+    
+    for i : 1 thru cols do (
+        
+        ones : 0,
+    
+        for j : 1 thru rows do (
+            if M[j, i] = 1 then ones : ones + 1
+            else if M[j, i] # 0 then(
+                bool : false,
+                return(false)
+            )
+        ),
+        
+        if ones # 1 then(
+             bool : false,
+            return(false)
+        )
+    ),
+
+
+
+
+    
+    return(bool)
+    
+    )$
+
+    check_elementary(A):= block(
+     [M, rows, cols, i, j, nones, nozeros, bool],    
+    M : to_matrix(A),
+    rows : length(M),
+    cols : length(first(M)),
+
+
+    if rows # cols then (
+        return(0)
+    ),
+    
+    /* 1*/
+    nones : 0,
+    bool : true,
+    for i : 1 thru rows do (
+        for j : 1 thru cols do (
+            if i # j and M[i, j] # 0 then bool : false,
+            
+            if i = j and M[i, j] # 1 then (
+                if M[i, j] = 0 then bool : false,
+                nones : nones + 1
+            )
+        )
+    ),
+    
+    if nones = 1 and bool = true then(
+            return(1)
+    ),
+    
+     /* 2*/
+    nones : 0,
+    bool : true,
+    for i : 1 thru rows do (
+        for j : 1 thru cols do (
+            if i # j and M[i, j] # 0 then nones : nones + 1,
+            if i = j and M[i, j] # 1 then bool : false
+        )
+    ),
+    
+    if nones = 1 and bool = true then(
+            return(2)
+    ),
+    
+    /* 3*/
+    nones : 0,
+    nozeros : 0,
+    bool : true,
+    for i : 1 thru rows do (
+        for j : 1 thru cols do (
+            if M[i, j] # 0 and M[i, j] # 1 then bool : false 
+            else if i # j and M[i, j] = 1 then nozeros : nozeros +1
+            else if i = j and M[i, j] = 0 then  nones : nones + 1
+        )
+    ),
+    
+    if check_permutation(M) and nones = 2 and nozeros = 2 and bool = true then(
+            return(3)
+    ),
+
+return(0)
+)$
